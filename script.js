@@ -513,12 +513,13 @@ function drawStampedImage(w, h, drawer) {
   const [l1, l2, l3] = buildStampLines();
   const lines = [l1, l2, l3];
 
-  // --- layout values ---
-  const outerPad = Math.round(w * 0.02);          // gap from image edge
-  const fontSize = Math.round(h * 0.03);
-  const lineHeight = fontSize + 2;
-  const innerXPad = Math.round(fontSize * 0.6);   // padding inside the box
-  const innerYPad = Math.round(fontSize * 0.5);
+  // --- layout values (match CSS overlay) ---
+  const base = Math.min(w, h);                    // use min so portrait isn't huge
+  const outerPad = Math.round(base * 0.02);       // ~2% from edges  -> right:2%, bottom:2%
+  const fontSize = Math.max(16, Math.round(base * 0.03)); // ~3% of min dimension
+  const lineHeight = Math.round(fontSize * 1.25);
+  const innerXPad = Math.round(fontSize * 0.45);  // padding inside box
+  const innerYPad = Math.round(fontSize * 0.45);
 
   ctx.font = `${fontSize}px system-ui, -apple-system, Segoe UI, Roboto, Arial`;
   ctx.textBaseline = "top";
@@ -527,34 +528,57 @@ function drawStampedImage(w, h, drawer) {
   // Measure text widths so box hugs the text
   let maxWidth = 0;
   for (const line of lines) {
-    const w = ctx.measureText(line).width;
-    if (w > maxWidth) maxWidth = w;
+    const measured = ctx.measureText(line).width;
+    if (measured > maxWidth) maxWidth = measured;
   }
 
   const boxHeight = lines.length * lineHeight + innerYPad * 2;
-  const rightX = w - outerPad;                    // visual right edge anchor
-  const boxX = rightX - maxWidth - innerXPad * 2; // box left
-  const boxY = h - boxHeight - outerPad;
-  const boxW = maxWidth + innerXPad * 2;
+  const rightX = w - outerPad; // anchor for text / box on the right
 
-  // --- shield / crest (still top-left) ---
-  const logoPad = outerPad;
-  const logoSize = Math.round(Math.min(w, h) * 0.12);
+  // Limit box width to ~78% like CSS max-width:78%
+  const maxBoxW = w * 0.78;
+  const neededBoxW = maxWidth + innerXPad * 2;
+  const boxW = Math.min(neededBoxW, maxBoxW);
+
+  const boxX = rightX - boxW;               // box left
+  const boxY = h - boxHeight - outerPad;    // box top
+
+  // --- shield / crest (top-left) ---
   if (logoReady) {
+    const logoSize = Math.round(base * 0.12);
+    const logoPad = outerPad;
     ctx.drawImage(logoImg, logoPad, logoPad, logoSize, logoSize);
   }
 
-  // --- gradient box snug to text ---
-  const g = ctx.createLinearGradient(boxX, boxY + boxHeight, boxX, boxY);
-  g.addColorStop(0, "rgba(15,23,42,0.95)");
-  g.addColorStop(0.7, "rgba(15,23,42,0.7)");
-  g.addColorStop(1, "transparent");
-  ctx.fillStyle = g;
-  ctx.fillRect(boxX, boxY, boxW, boxHeight);
+  // --- helper for rounded rectangle ---
+  function roundRect(ctx, x, y, width, height, radius) {
+    const r = Math.min(radius, width / 2, height / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.lineTo(x + width - r, y);
+    ctx.quadraticCurveTo(x + width, y, x + width, y + r);
+    ctx.lineTo(x + width, y + height - r);
+    ctx.quadraticCurveTo(x + width, y + height, x + width - r, y + height);
+    ctx.lineTo(x + r, y + height);
+    ctx.quadraticCurveTo(x, y + height, x, y + height - r);
+    ctx.lineTo(x, y + r);
+    ctx.quadraticCurveTo(x, y, x + r, y);
+    ctx.closePath();
+  }
+
+  // --- gradient box inside rounded rect (matches CSS gradient) ---
+  const grad = ctx.createLinearGradient(boxX, boxY + boxHeight, boxX, boxY);
+  grad.addColorStop(0, "rgba(15,23,42,0.95)");
+  grad.addColorStop(0.7, "rgba(15,23,42,0.7)");
+  grad.addColorStop(1, "transparent");
+
+  ctx.fillStyle = grad;
+  roundRect(ctx, boxX, boxY, boxW, boxHeight, fontSize * 0.4);
+  ctx.fill();
 
   // --- text aligned to the right, with inner padding ---
   ctx.fillStyle = "#fff";
-  const textRightX = rightX - innerXPad; // so there's padding to the box edge
+  const textRightX = rightX - innerXPad;
   let ty = boxY + innerYPad;
 
   for (const line of lines) {
