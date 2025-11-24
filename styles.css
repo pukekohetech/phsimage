@@ -189,18 +189,36 @@ button[disabled], button:disabled {
   border: 1px solid var(--border);
 }
 
-/* Video / Preview */
 .media,
 #video,
 #preview {
   width: 100%;
   max-width: 100%;
   height: auto;
-  aspect-ratio: 4 / 3;
   object-fit: cover;
   display: block;
   background: #000;
 }
+
+/* Use 4:3 box in landscape so it looks neat on desktop/tablet */
+@media (orientation: landscape) {
+  .media,
+  #video,
+  #preview {
+    aspect-ratio: auto;
+  }
+}
+
+/* In portrait, let the video/image use its real aspect ratio
+   so the overlay and stamped image line up */
+@media (orientation: portrait) {
+  .media,
+  #video,
+  #preview {
+    aspect-ratio: auto;
+  }
+}
+
 
 /* =====================
    SHIELD OVERLAY
