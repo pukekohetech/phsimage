@@ -17,6 +17,12 @@
   box-sizing: border-box;
 }
 
+html, body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
 body {
   font-family: var(--font);
   margin: 0;
@@ -24,7 +30,9 @@ body {
   color: var(--fg);
 }
 
-.app {
+/* APP WRAPPER */
+#app {
+  width: 100%;
   max-width: 1100px;
   margin: 0 auto;
   padding: var(--space);
@@ -32,11 +40,8 @@ body {
   gap: var(--space);
 }
 
-h1,
-h2,
-h3 {
-  margin: 0;
-}
+/* TITLES */
+h1, h2, h3 { margin: 0; }
 
 h2 {
   margin-bottom: 4px;
@@ -48,41 +53,44 @@ h2 {
   font-size: clamp(12px, 1.6vw, 14px);
 }
 
-/* Layout cards left / right */
-.layout {
+/* MAIN GRID (FIX FOR TOO-WIDE UI) */
+.grid {
   display: grid;
   gap: var(--space);
+  grid-template-columns: 1fr;
+  width: 100%;
 }
 
 @media (min-width: 900px) {
-  .layout {
-    grid-template-columns: 1.1fr minmax(320px, 520px);
-    align-items: flex-start;
+  .grid {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
   }
 }
 
-.card {
+/* PANEL (CARD) */
+.panel {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   padding: var(--space);
   background: color-mix(in oklab, var(--bg) 92%, var(--fg) 8%);
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
-/* Form + general controls */
-.fields {
+.stack {
   display: grid;
   gap: var(--space);
 }
 
-.row {
-  display: grid;
-  gap: var(--space);
-}
+/* FORM + BUTTONS */
+.fields { display: grid; gap: var(--space); }
+
+.row { display: grid; gap: var(--space); }
 
 @media (min-width: 600px) {
-  .row--2 {
-    grid-template-columns: 1fr 1fr;
-  }
+  .row--2 { grid-template-columns: 1fr 1fr; }
 }
 
 label {
@@ -91,10 +99,7 @@ label {
   font-size: clamp(12px, 1.6vw, 14px);
 }
 
-input,
-select,
-button,
-textarea {
+input, select, button, textarea {
   width: 100%;
   font: inherit;
   padding: var(--field-pad);
@@ -104,16 +109,13 @@ textarea {
   color: inherit;
 }
 
-textarea {
-  resize: vertical;
-}
+textarea { resize: vertical; }
 
 input:focus,
 select:focus,
 button:focus,
 textarea:focus {
-  outline: 3px solid
-    color-mix(in oklab, var(--accent) 40%, transparent);
+  outline: 3px solid color-mix(in oklab, var(--accent) 40%, transparent);
   outline-offset: 2px;
 }
 
@@ -125,47 +127,24 @@ textarea:focus {
 
 button {
   cursor: pointer;
-  transition: transform 0.06s ease, box-shadow 0.06s ease,
-    background 0.12s ease;
+  transition: transform 0.06s ease, box-shadow 0.06s ease, background 0.12s ease;
 }
 
 button:active {
   transform: translateY(1px);
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15) inset;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.15);
 }
 
-.primary {
-  background: var(--accent);
-  color: #fff;
-  border: none;
-}
+.primary { background: var(--accent); color: #fff; border: none; }
+.success { background: var(--ok); color: #fff; border: none; }
+.danger { background: var(--err); color: #fff; border: none; }
 
-.success {
-  background: var(--ok);
-  color: #fff;
-  border: none;
-}
-
-.danger {
-  background: var(--err);
-  color: #fff;
-  border: none;
-}
-
-button[disabled],
-button:disabled {
+button[disabled], button:disabled {
   opacity: 0.5;
   cursor: default;
 }
 
-/* Theme / small buttons (if you use them) */
-.btn-small {
-  width: auto;
-  padding-inline: 0.9em;
-  font-size: 0.85rem;
-}
-
-/* Toast */
+/* TOAST */
 .toast {
   display: none;
   padding: 10px 12px;
@@ -175,26 +154,12 @@ button:disabled {
   font-size: 0.9rem;
 }
 
-.toast.show {
-  display: block;
-}
+.toast.show { display: block; }
+.toast.error { background: var(--err); }
 
-.toast.error {
-  background: var(--err);
-}
+/* LISTS */
+.small { font-size: 0.8rem; opacity: 0.75; }
 
-/* Helpers */
-.hint {
-  font-size: clamp(12px, 1.6vw, 14px);
-  opacity: 0.8;
-}
-
-.small {
-  font-size: 0.8rem;
-  opacity: 0.75;
-}
-
-/* Teacher list (right-hand side list in your new UI) */
 #teacherList {
   list-style: none;
   margin: 0;
@@ -208,27 +173,28 @@ button:disabled {
   border-bottom: 1px dashed var(--border);
 }
 
-#teacherList li:last-child {
-  border-bottom: none;
-}
+#teacherList li:last-child { border-bottom: none; }
 
-/* ===========================
-   MEDIA AREA: video + preview
-   =========================== */
+/* ==========================================
+   MEDIA AREA (VIDEO + PREVIEW + OVERLAYS)
+   ========================================== */
 
 .media-wrap {
   position: relative;
+  width: 100%;
+  max-width: 100%;
   border-radius: var(--radius);
   overflow: hidden;
   background: #000;
   border: 1px solid var(--border);
 }
 
-/* Camera + preview share same box */
+/* Video / Preview */
 .media,
 #video,
 #preview {
   width: 100%;
+  max-width: 100%;
   height: auto;
   aspect-ratio: 4 / 3;
   object-fit: cover;
@@ -236,13 +202,9 @@ button:disabled {
   background: #000;
 }
 
-/* If you want preview to letterbox instead of crop, you could change:
-   object-fit: cover; -> contain; */
-
-/* ===========================
-   SHIELD OVERLAY (preview)
-   =========================== */
-
+/* =====================
+   SHIELD OVERLAY
+   ===================== */
 .shield-overlay,
 #shieldOverlay {
   position: absolute;
@@ -251,34 +213,33 @@ button:disabled {
   width: clamp(40px, 10vmin, 72px);
   height: auto;
   pointer-events: none;
-  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.4));
+  z-index: 5;
 }
 
-/* ===========================
-   TEXT STAMP OVERLAY (preview)
-   WYSIWYG with stamped image
-   =========================== */
-
+/* =====================
+   TEXT OVERLAY (WYSIWYG)
+   ===================== */
 .stamp-overlay,
 #overlayText {
   position: absolute;
   right: clamp(8px, 2vw, 16px);
   bottom: clamp(8px, 2vw, 16px);
-
-  /* Rounded, padded box – matches canvas version */
   padding: 0.4em 0.9em;
   border-radius: 10px;
 
+  /* Same as canvas gradient */
   background: linear-gradient(
     to top,
-    rgba(15, 23, 42, 0.95),
-    rgba(15, 23, 42, 0.7),
+    rgba(15,23,42,0.95),
+    rgba(15,23,42,0.7),
     transparent
   );
+
   color: #fff;
   font-weight: 600;
 
-  /* Use vmin so tall portrait phones don’t get massive text */
+  /* vmin scaling prevents portrait text from exploding */
   font-size: clamp(11px, 1.2vmin + 9px, 16px);
   line-height: 1.3;
 
@@ -287,11 +248,10 @@ button:disabled {
   white-space: pre-line;
 
   pointer-events: none;
+  z-index: 5;
 }
 
-/* If you need to hide overlay in some states, you can just set display:none inline or via a class */
-
-/* PWA install / header extras (optional) */
+/* OPTIONAL: PWA header action buttons */
 .header-row {
   display: flex;
   flex-wrap: wrap;
