@@ -57,7 +57,16 @@
     {
       "id": "msl",
       "name": "Mrs Mous",
-      "email": "dvm@pukekohehigh.school.nz",
+      "email": "msl@pukekohehigh.school.nz",
+      "subjects": [
+        "9ttec",
+        "10ttec"
+      ]
+    },
+    {
+      "id": "clc",
+      "name": "Mrs Coull",
+      "email": "clc@pukekohehigh.school.nz",
       "subjects": [
         "9ttec",
         "10ttec"
